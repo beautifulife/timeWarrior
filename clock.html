@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Clock</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" media="screen" href="style.css" />
+  <link href="https://fonts.googleapis.com/css?family=Orbitron" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <a href="clock.html"><h1 class="title">Time Warrior</h1></a>
+  </header>
+  <div class="partition1">
+    <div class="clock">
+      <div class="clockInfo" id="clockInfo"></div>
+      <div class="clockMain" id="realClock">... Loading ...</div>
+      <div class="clockSub">
+        <span class="clockSubInner" id="clockYear"></span>
+        <span class="clockSubInner" id="clockMonth"></span>
+        <span class="clockSubInner" id="clockDate"></span>
+      </div>
+    </div>
+    <div class="stopWatch">
+      <div class="stopWatchInfo">StopWatch</div>
+      <div class="stopWatchMain">
+        <div class="timeFlow" id="timeFlow">00:00:00:00</div>
+        <div class="buttonSection">
+          <button class="button" id="start">start</button>
+          <button class="button" id="pause">pause</button>
+          <button class="button" id="reset">reset</button>
+          <button class="button" id="record">record</button>
+        </div>
+        <div class="timeRecordSection">
+          <div id="records">
+            <ol id="ol">
+              
+            </ol>
+          </div>  
+        </div>
+        <button class="button" id="recordsClear">clear</button>
+      </div>
+    </div>
+  </div>
+  <div class="partition2">
+    <div class="calendar">
+      <div class="calendarInfo">Calendar</div>
+      <div class="calendarNav">
+        <button class="calendarButton" id="button_left"><</button>
+        <div class="calendarNow"><span id="calendar_year"></span><br><span id="calendar_month"></span></div>
+        <button class="calendarButton" id="button_right">></button>
+      </div>
+      <div class="calendarMain">
+        <div class="calendarWeek">
+          <span>Sun</span>
+          <span>Mon</span>
+          <span>Tue</span>
+          <span>Wed</span>
+          <span>Thu</span>
+          <span>Fri</span>
+          <span>Sat</span>
+        </div>
+        <div class="calendarDays" id="calendar_days" >
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="copyRight">copyright. &nbsp; @beautifulife</div>
+</body> 
+<script src="script.js"></script>
+</html>
