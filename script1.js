@@ -255,16 +255,18 @@ window.onload = realTime;
 
   // -----------------TODO List-----------------  
 
-
   var inputValue;
+  var defaultTemplate;
+  template();
   var todoData = [];
-  var dataArr = {};
-  // var test = '1234';
-  // data = {[test]:[]}
-  // data[test].push({text: '414', id:'413'});
-  // data[test].push({text: '4123', id:'15123'});
-  // console.log(data);
   
+
+  var dataArr = {};
+
+  var date;
+  // var id;
+  // var title;
+  // var completed;
 
   var todoInput = document.querySelector('.todoInput');
   var todos = document.querySelector('.todos');
@@ -275,55 +277,96 @@ window.onload = realTime;
   var leftItems = document.querySelector('.todoFooterLeft');
   var rename;
 
-  function makeId(title) {
-    var num = Math.random();
-    var date = changeDate.toLocaleDateString();
-    dataArr = {[date]:[]};
-    if (!completed) {
-      var completed = false;
-    }
-    
-    var id = "@" + num;
-    // data[date].push({ id: id, title: title , completed: completed });
-    dataArr[date].push({ id: id, title: title , completed: completed });
-    dataArr[date].push({ id: id, title: title , completed: 'ture' });
-    console.log(dataArr);
-  }
 
   todoInput.addEventListener('keyup', addList);
   todoChooseAll.addEventListener('click', chooseAll);
+  clearCompleted.addEventListener('click', clearAll);
   for(let i=0; i<todoFooterToggle.length; i++) {
-    todoFooterToggle[i].addEventListener('click', function (e) {
-      for(let j=0; j<todoFooterToggle.length; j++) {
-        if(todoFooterToggle[j].classList.value.match('selected')) {
-          todoFooterToggle[j].classList.remove('selected');
-        }
-      }
-      e.currentTarget.classList.add('selected');
-      
-    })
+    todoFooterToggle[i].addEventListener('click', selectToggle );
   }
-  clearCompleted.addEventListener('click', function () {
+
+  // To Do List 날짜 표시 및 date변수 지정
+  // 기존 출력항목 삭제 및 DB 있을 시 출력
+  function showTodoDate(dateNow) {
+    date = dateNow.toLocaleDateString();
+    todoDate.innerHTML = date;
+    todoDate.setAttribute('data-todo-data', date);
+
+    todoChooseAll.classList.remove("checkedAll");
+    pressAgain();
+    hideChooseAll()
+  }
+
+
+  // All, Active, Completed를 click이벤트로 변경
+  function selectToggle(e) {
+    for(let j=0; j<todoFooterToggle.length; j++) {
+      if(todoFooterToggle[j].classList.value.match('selected')) {
+        todoFooterToggle[j].classList.remove('selected');
+      }
+    }
+    e.currentTarget.classList.add('selected');
+
+    // console.log('operating pressAgain');
+    pressAgain();
+  }
+
+  
+  // 리스트를 전체삭제하고 dataArr에서도 삭제
+  function clearAll() {
     var toggle = document.querySelectorAll('.toggle');
     for(let i=0; i<toggle.length; i++) {
       if(toggle[i].checked) {
+        var id = toggle[i].dataset.id;
+        var a = findId(id);
+        dataArr[date].splice(a, 1);
+        console.log(dataArr);
+
         toggle[i].parentNode.remove();
       }
     }
-    todoData = [];
     todoChooseAll.classList.remove('checkedAll')
     hideChooseAll()
-  })
-
-
-  
-  function showTodoDate(date) {
-    todoDate.innerHTML = date.toLocaleDateString();
-    todoDate.setAttribute('data-todo-data', date.toLocaleDateString());
   }
 
+  // event발생시 해당 target id 와 동일한 id를 dataArr에서 찾음
+  function findId (targetId) {
+    for (let i=0; i<dataArr[date].length; i++) {
+      if(dataArr[date][i].id === targetId) {
+        return i;
+      }
+    }
+  }
+
+  
+  // 페이지변경 시 재출력 기능
+  function pressAgain() {
+    // 기존출력물 삭제
+    var todoRecord = document.querySelectorAll('.todoRecord');
+    for (let i=0; i<todoRecord.length; i++) {
+      todoRecord[i].remove();
+    }
+
+    // DB 기반 새로 출력
+    if (dataArr[date]) {
+      for (let i=0; i<dataArr[date].length; i++) {
+        pressTemplate(todos, dataArr[date][i].id, dataArr[date][i].title, dataArr[date][i].completed);
+      }
+    }
+
+    // data 에 complete일 경우 체크박스 표시
+    var todoRecord = document.querySelectorAll('.todoRecord');
+    checkBox(todoRecord); 
+
+    // 이벤트 추가
+    addEvent(todoRecord);
+    console.log('finished');
+  }
+
+  // input 및 enter
   function addList(e) {
-    if(e.code === 'Enter') {
+    // inputVaule 없을시 아무것도 입력안되도록 수정 (기존 = 0 출력)
+    if(inputValue && e.code === 'Enter') {
       // 데이터 입력 및 db추가
       addData();
       // console.log(data);
@@ -332,93 +375,182 @@ window.onload = realTime;
     }
   }
 
+  // 항목추가 프로세스
   function addData() {
     if((inputValue !== "") && (inputValue !== undefined)) {
       todoData.push(inputValue);
-      // if(testData[dateData]) {
-      //   testData[dateData].push(inputValue);
-      // } else {
-      //   testData[dateData] = [inputValue];
-      // }
-      // console.log(testData);
+      // inputValue(임시값) title변수에 할당
+      pressData(todos, inputValue);
+
+      // input 태그 값 및 inputValue(임시값) 삭제 
       todoInput.value = '';
       inputValue = 0;
-      addTemplate(todos, todoData);
+
+      // 항목 명 수정이벤트 삽입
       rename = document.querySelectorAll(".rename");
       for(let i=0; i<rename.length; i++) {
         rename[i].addEventListener('click', renameFunc);
       }
+
+      // 항목 생성시 eventHandler 생성
       var todoRecord = document.querySelectorAll('.todoRecord');
-      clickFunc(todoRecord, todoData);
+      checkBox(todoRecord);
+      addEvent(todoRecord);
       hideChooseAll()
     }
   }
-
-  function addTemplate(addTo, data) {
-    var todoRecord = document.querySelectorAll('.todoRecord');
-    for (let child of todoRecord) {
-      addTo.removeChild(child);
-    }
-
-    for (let i = 0; i < data.length; i++) {
-      makeId(data[i]);
-      var template 
-      = `<li class="todoRecord">
+  
+  // 항목발행용 탬플릿
+  function template() {
+    defaultTemplate 
+    = `<li data-id="{{id}}" class="todoRecord {{completed}}">
       <input class="toggle" type="checkbox">
-      <label class="rename" for="toggle">${data[i]}</label>
+      <label class="rename" for="toggle">{{title}}</label>
       <button class="destroy"></button>
       </li>`;
-      addTo.innerHTML += template;
-    }
+  };
+  
+  // DB저장 및 항목 발행
+  function pressData(addTo, title) {
+    
+    var id = '@' + Math.random();
+    var completed = '';
 
-    // for (let i = 0; i < data.length; i++) {
-    //   var template 
-    //   = `<li data-date="${data[i].date}" data-id="${data[i].id}" class="todoRecord ${data[i].completed}">
-    //   <input class="toggle" type="checkbox"  ${data[i].checked}>
-    //   <label for="toggle">${data[i].title}}</label>
-    //   <button class="destroy"></button>
-    //   </li>`;
-    //   addTo.innerHTML += template;
+    // dataArr가 덮어씌워지는 것을 방지
+    // if(!dataArr[date]) {
+    //   if(dataArr) {
+    //     var dataArr2 = {[date]:[]};
+    //     Object.assign(dataArr, dataArr2);
+    //   } else {
+    //     dataArr = {[date]:[]};
+    //   }
     // }
+    // dataArr[date].push({id:id, title:title, completed:completed});
+
+    // 수정된 코드
+    if(!dataArr[date]) {
+      dataArr[date] = [];
+    }
+    dataArr[date].push({id:id, title:title, completed:completed});
+
+    console.log(dataArr);
+    
+    // 탬플릿의 주요변수를 교체
+    pressTemplate(addTo, id, title, completed);
   }
 
-  function clickFunc(addTo, data) {
-    console.log('clickFunc');
+  // 탬플릿 적용 및 data생성 시 toggle 조건에 따라 출력물 수정
+  function pressTemplate (addTo, id, title, completed) {
+    console.log('start pressTemplate');
+    console.log(completed);
+    var selected = document.querySelectorAll('.selected');
+    if(selected[0].innerHTML === 'Active') {
+      if(completed === 'completed') {
+        return;
+        // console.log('Active');
+      }
+    } else if(selected[0].innerHTML === 'Completed') {
+      if(completed !== 'completed') {
+        return;
+        // console.log('completed');
+      }
+    }
+
+    var templateNow = defaultTemplate;
+    templateNow = templateNow.replace('{{id}}', id);
+    templateNow = templateNow.replace('{{title}}', title);
+    templateNow = templateNow.replace('{{completed}}', completed);
+
+    // 항목 발행
+    addTo.innerHTML += templateNow
+  }
+
+  // event Handler 생성
+  function addEvent(addTo) {
+    // console.log(addTo[addTo.length-1].children[2]);
+    // addTo[addTo.length-1].children[2].addEventListener('click', removeList);
+    // 하나씩 생성될 때마다 이벤트를 걸을 시 이벤트리스너가 마지막 항목에만 생성
     for(let i=0; i<addTo.length; i++) {
-      addTo[i].children[2].addEventListener('click', function(e) {
-        // debugger
-        // console.log(e.currentTarget.parentNode.id);
+      addTo[i].children[2].removeEventListener('click', removeList);
+    }
+    for(let i=0; i<addTo.length; i++) {
+      addTo[i].children[2].addEventListener('click', removeList);
+    }
 
-        var index;
+    for(let i=0; i<addTo.length; i++) {
+      addTo[i].children[0].removeEventListener('click', completeCheck);
+    }
+    for(let i=0; i<addTo.length; i++) {
+      addTo[i].children[0].addEventListener('click', completeCheck);
+    }
+    
 
-        for (let j = 0; j < addTo.length; j++) {
-          if (addTo[j] === e.currentTarget.parentNode) {
-            index = j;
-          }
+    // 항목삭제
+    function removeList(e) {
+      var id = e.currentTarget.parentNode.dataset.id;
+      var a = findId(id);
+  
+      dataArr[date].splice(a, 1);
+      // console.log(dataArr[date]);
+
+      e.currentTarget.parentNode.remove();
+      e.currentTarget.removeEventListener('click', removeList);  
+      hideChooseAll()
+    }
+
+    // 완료 체크 기능
+    function completeCheck(e) {
+      var id = e.currentTarget.parentNode.dataset.id;
+      var a = findId(id);
+
+      if(e.currentTarget.checked) {  
+        dataArr[date][a].completed = 'completed';
+        console.log(dataArr[date][a].completed);
+      } else {
+        dataArr[date][a].completed = '';
+        console.log(dataArr[date][a].completed);
+      }
+
+      var selected = document.querySelectorAll('.selected');
+      if (selected[0].innerHTML === 'Active') {
+        if (e.currentTarget.checked === true) {
+          e.currentTarget.parentNode.remove();
         }
+      } else if (selected[0].innerHTML === 'Completed') {
+        if (e.currentTarget.checked === false) {
+          e.currentTarget.parentNode.remove();
+        }
+      }
 
-        data.splice(index, 1);
-        e.currentTarget.parentNode.remove();
-        addTo = document.querySelectorAll('.todoRecord');
-        hideChooseAll()
-        clickFunc(addTo, data);
-      });
-    }
-
-    for(let i=0; i<addTo.length; i++) {
-      addTo[i].children[0].addEventListener('click', function(e) {
-        hideChooseAll()
-      });
-    }
+      hideChooseAll();
+    }  
   }
 
+  // data와 비교하여 checkBox 체크 변경
+  function checkBox (addTo) {
+    for (let i=0; i<addTo.length; i++) {
+      var id = addTo[i].dataset.id;
+      var a = findId(id);
+
+      if(dataArr[date][a].completed !== "") {
+        addTo[i].children[0].checked = true;
+      }
+    }
+    hideChooseAll()
+  }
+
+  //이름 변경
   function renameFunc(e) {
     var newText = prompt("rename here");
+    var id = e.currentTarget.parentNode.dataset.id;
+    var a = findId(id);
+    dataArr[date][a].title = newText;
     if((newText !== "") && (newText !== undefined)) {
       e.currentTarget.innerHTML = newText;
     }
   }
 
+  // 체크박스 전체선택기능
   function chooseAll(e) {
     var toggle = document.querySelectorAll('.toggle');
     // console.log(e.currentTarget.classList.value.match('checkedAll'));
@@ -426,17 +558,25 @@ window.onload = realTime;
       e.currentTarget.classList.remove('checkedAll')
       for(let i=0; i<toggle.length; i++) {
         toggle[i].checked = false;
+        var id = toggle[i].parentNode.dataset.id;
+        var a = findId(id);
+        dataArr[date][a].completed = "";
       }
     } else {
       // console.log(e.currentTarget.classList);
       e.currentTarget.classList.add('checkedAll')
       for(let i=0; i<toggle.length; i++) {
         toggle[i].checked = true;
+        var id = toggle[i].parentNode.dataset.id;
+        var a = findId(id);
+        dataArr[date][a].completed = "completed";
       }
     }
+    console.log(dataArr);
     hideChooseAll()
   }
 
+  // 체크박스 선택기능 & 전체 선택기능버튼 숨기기,보이기
   function hideChooseAll() {
     var toggle = document.querySelectorAll('.toggle');
     var toggleCount = 0;

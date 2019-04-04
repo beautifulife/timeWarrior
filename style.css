@@ -8,6 +8,10 @@ a {
   text-decoration: none;
 }
 
+input:focus, button:focus {
+  outline:none;
+}
+
 .title {
   color: white;
   font-size: 3rem;
@@ -49,7 +53,7 @@ a {
 }
 
 
-.clockInfo, .stopWatchInfo, .calendarInfo {
+.clockInfo, .stopWatchInfo, .calendarInfo, .todoInfo {
   color: red;
   font-size: 14px;
   letter-spacing: 0.2rem;
@@ -219,12 +223,12 @@ li {
   width: 40px;
   height: 24px;
   margin: 7px 4.2px;
-  line-height: 24px;
+  line-height: 28px;
   color: white;
   text-align: center;
   box-sizing :border-box;
   border-radius: 50%;
-  cursor: pointer;
+  vertical-align: top;
 }
 
 .copyRight {
@@ -232,4 +236,192 @@ li {
   font-size: 0.8rem;
   margin-top: 20px;
   letter-spacing: 0.1rem;
+}
+
+.calendarDaysReal {
+  cursor: pointer;
+}
+
+.calendarDaysReal.active {
+  border: 2px solid red !important;
+  line-height: 24px;
+}
+
+#today {
+  border: 2px solid gold;
+  line-height: 24px;
+}
+
+/* -----------------할일----------------- */
+
+.todoList {
+  min-width: 400px; 
+  max-width: 50%;
+  min-height: 150px;
+  margin:  5px auto;
+  padding: 10px;
+  border: 1px solid gold;
+  border-radius: 30px;
+  box-shadow: 3px 3px 10px 5px red;
+  box-sizing: border-box;
+  margin:  30px auto;
+}
+
+.hidden {
+  display: none;
+}
+
+.todoDate {
+  color: gold;
+  font-size: 1rem;
+  letter-spacing: 0.1rem;
+  text-align: center;
+  margin: 5px;
+  margin-bottom: 5px;
+  padding: 10px;
+  border-top : 0.5px solid rgba(240, 239, 239, 0.577);
+  border-bottom: 0.5px solid rgba(240, 239, 239, 0.577);
+}
+
+.todoMain {
+  position: relative;
+  margin: 5px auto;
+  text-align: left;
+}
+
+.todoChooseAll {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 6px;
+  margin-left: 12px;
+  padding: 5px;
+  background-color: black;
+  color:white;
+  border: 1px solid gray;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.todoChooseAll.checkedAll{
+  border: 1px solid red;
+  background-color: red;
+}
+
+.todoInput {
+  width: 320px;
+  margin-left: 30px;
+  margin-bottom: 5px;
+  padding: 5px;
+  border: none;
+  background-color: black;
+  font-size: 1rem;
+  color: white;
+  text-align: left;
+  font-family: Orbitron;
+}
+
+.todos {
+  list-style: none;
+  display: block;
+  padding-inline-start: 0px;
+  margin-block-start : 0.5rem;
+  margin-block-end : 0.5rem;
+}
+
+.todoRecord {
+  list-style: none;
+  margin: 5px 10px;
+  text-align: left;
+  color:white;
+}
+
+.toggle {
+  width: 10px;
+}
+
+.toggle:checked + label {
+  color: gray;
+  text-decoration: line-through;
+}
+
+.todoRecord label {
+  display: inline-block;
+  width: 300px;
+  height: 100%;
+  margin-left: 5px;
+}
+
+.destroy {
+  background: none;
+  color: rgba(255, 0, 0, 0.7);
+  border: none;
+  font-size: 1rem;
+  font-family: Orbitron;
+  cursor: pointer;
+  float: right;
+}
+
+.destroy:hover {
+  color:red;
+}
+
+.destroy:after {
+  content:'X';
+}
+
+
+.todoFooter {
+  position: relative;
+  height: 30px;
+  border-top: 0.5px solid  rgba(240, 239, 239, 0.577);
+  font-size: 0.5rem;
+  color: white;
+  margin: 0 5px;
+}
+
+.todoFooterLeft, .todoFooterRight {
+  height: 30px;
+  margin: 5px 10px;
+  line-height: 30px;
+}
+
+.todoFooterLeft {
+  float:left;
+}
+
+.todoFooterRight {
+  float: right;
+  cursor: pointer;
+}
+.todoFooterRight:hover {
+  color:red;
+  text-decoration: underline;
+}
+
+.todoFooterCenter {
+  position: absolute;
+  left: 25.5%;
+  display: inline-block;
+  width: 150px;
+}
+
+.todoFooterToggle {
+  height: 30px;
+  margin: 5px 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  line-height: 30px;
+  background: none;
+  color: white;
+  font-family: Orbitron;
+  border: none;
+  font-size: 0.5rem;
+  cursor: pointer;
+}
+
+.todoFooterToggle.selected{
+  color:gold;
+  border-radius: 100%;
+  box-sizing: border-box;
 }
